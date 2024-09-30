@@ -23,7 +23,7 @@ Compile / doc / target := baseDirectory.value / "api"
 
 lazy val hello = (project in file("."))
   .settings(
-    name := "Hello",
+    name := "ASMD Lab 02",
     scalaVersion := "3.5.1",
     libraryDependencies ++= scalaTestBundle,
     libraryDependencies ++= cucumberBundle,
