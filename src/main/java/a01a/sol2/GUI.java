@@ -9,15 +9,14 @@ import java.awt.event.ActionListener;
 public class GUI extends JFrame {
     
     private static final long serialVersionUID = -6218820567019985015L;
-    private final Map<JButton, Position> cells = new HashMap<>();
+    final Map<JButton, Position> cells = new HashMap<>();
     private final Logic logic;
     
-    public GUI(int size) {
+    public GUI(final Logic logic) {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setSize(70*size, 70*size);
-        this.logic = new LogicImpl(size, new LoggerImpl());
-        
-        JPanel panel = new JPanel(new GridLayout(size,size));
+        this.logic = logic;
+        this.setSize(70*logic.getSize(), 70*logic.getSize());
+        JPanel panel = new JPanel(new GridLayout(logic.getSize(),logic.getSize()));
         this.getContentPane().add(panel);
         
         ActionListener al = e -> {
@@ -35,8 +34,8 @@ public class GUI extends JFrame {
             }
         };
                 
-        for (int i=0; i<size; i++){
-            for (int j=0; j<size; j++){
+        for (int i=0; i<logic.getSize(); i++){
+            for (int j=0; j<logic.getSize(); j++){
             	final JButton jb = new JButton();
                 this.cells.put(jb, new Position(j,i));
                 jb.addActionListener(al);

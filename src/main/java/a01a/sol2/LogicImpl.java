@@ -65,4 +65,9 @@ public class LogicImpl implements Logic {
     public boolean isOver() {
         return this.marks.stream().anyMatch(p -> p.x() == this.size || p.y() == -1);
     }
+
+    @Override
+    public int getSize() {
+        return this.size;
+    }
 }
