@@ -10,22 +10,29 @@ public class LogicImpl implements Logic {
     private final int size;
     private List<Position> marks = new LinkedList<>();
     private boolean moving = false;
+    private final Logger logger;
 
-    public LogicImpl(int size) {
+    public LogicImpl(int size, Logger logger) {
         this.size = size;
+        this.logger = logger;
     }
 
     @Override
     public Optional<Integer> hit(Position position) {
         if (this.isOver()){
+            this.logger.log("Game is over");
             return Optional.empty();
         }
         if (this.moving || startMoving(position)){
+            if (!this.moving && startMoving(position)) {
+                this.logger.log("Cell in " + position + " hit and adjacent to a numbered cell");
+            }
             this.moving = true;
             this.moveMarks();
             return Optional.empty();
         }
         this.marks.add(position);
+        this.logger.log("Cell in " + position + " hit and labelled with " + this.marks.size());
         return Optional.of(this.marks.size());
     }
 
@@ -40,8 +47,13 @@ public class LogicImpl implements Logic {
     private void moveMarks() {
         this.marks = this.marks
                 .stream()
-                .map(p -> new Position(p.x()+1, p.y()-1))
+                .peek(p -> this.logger.log("Moving cell from " + p + " to " + moveUpRight(p)))
+                .map(p -> moveUpRight(p))
                 .collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    private Position moveUpRight(Position p) {
+        return new Position(p.x()+1, p.y()-1);
     }
 
     @Override
