@@ -4,12 +4,16 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.mockito.Mockito.{spy, verify, times, when}
+import org.mockito.ArgumentMatchers.{any}
 import java.util.Optional
+import scala.compiletime.ops.double
+import scala.util.Random
 
 class TestGUIExam extends AnyFlatSpec with Matchers:
 
-  "A new GUI" should "have an empty text when created" in:
-    val guiSize = 10
+  private val guiSize = 10
+
+  "A new GUI" should "have an empty text on all cells when created" in:
     val logics = spy(LogicImpl(guiSize, mock[Logger]))
     val guiProbe = GUIProbe(GUI(logics))
     for
@@ -20,13 +24,21 @@ class TestGUIExam extends AnyFlatSpec with Matchers:
       cellButton shouldBe defined
       cellButton.get.text shouldBe empty
 
-  "A GUI" should "show the correct text when a cell is hit" in:
-    val guiSize = 10
-    val logics = spy(LogicImpl(guiSize, mock[Logger]))
-    val cell = Position(0, 0)
-    when(logics.hit(cell)).thenReturn(Optional.of(1))
+  "A cell button on the GUI" should "show the correct text when a cell is hit" in:
+    val numberOfClicks = 10
+    val cells = Set.fill(numberOfClicks)(
+      Position(Random.nextInt(guiSize), Random.nextInt(guiSize))
+    )
+    val clickResults = LazyList.fill(numberOfClicks)(Random.nextInt)
+    val test = cells.zip(clickResults)
+    val logics = mock[Logic]
+    when(logics.getSize()).thenReturn(guiSize)
+    when(logics.isOver()).thenReturn(false)
+    test.foreach: (c, r) =>
+      when(logics.getMark(c)).thenReturn(Optional.of(r))
     val guiProbe = GUIProbe(GUI(logics))
-    val cellButton = guiProbe.buttonAt(cell)
-    cellButton shouldBe defined
-    cellButton.get.click()
-    cellButton.get.text shouldBe "1"
+    for (cell, result) <- test do
+      val cellButton = guiProbe.buttonAt(cell)
+      cellButton shouldBe defined
+      cellButton.get.click()
+      cellButton.get.text shouldBe result.toString
