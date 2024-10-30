@@ -8,12 +8,14 @@ import org.mockito.ArgumentMatchers.{any}
 import java.util.Optional
 import scala.compiletime.ops.double
 import scala.util.Random
+import org.scalatest.Ignore
 
 class TestGUIExam extends AnyFlatSpec with Matchers:
 
   private val guiSize = 10
 
   "A new GUI" should "have an empty text on all cells when created" in:
+    assume(System.getenv().get("CI") != "true")
     val logics = spy(LogicImpl(guiSize, mock[Logger]))
     val guiProbe = GUIProbe(GUI(logics))
     for
@@ -25,6 +27,7 @@ class TestGUIExam extends AnyFlatSpec with Matchers:
       cellButton.get.text shouldBe empty
 
   "A cell button on the GUI" should "show the correct text when a cell is hit" in:
+    assume(System.getenv().get("CI") != "true")
     val numberOfClicks = 10
     val cells = Set.fill(numberOfClicks)(
       Position(Random.nextInt(guiSize), Random.nextInt(guiSize))
